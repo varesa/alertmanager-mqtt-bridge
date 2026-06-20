@@ -129,7 +129,7 @@ func main() {
 				Fingerprint: a.Fingerprint,
 			}
 
-			messageJSON, err := json.Marshal(message)
+			messageJSON, err := json.MarshalIndent(message, "", "  ")
 
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: marshalling the MQTT message failed: %s\n", err)
