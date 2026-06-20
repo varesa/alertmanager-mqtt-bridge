@@ -95,18 +95,38 @@ func main() {
 		}
 
 		for _, a := range alert.Alerts {
+			labels := make(map[string]string)
+			for k, v := range alert.CommonLabels {
+				labels[k] = v
+			}
+			for k, v := range a.Labels {
+				labels[k] = v
+			}
+
+			annotations := make(map[string]string)
+			for k, v := range alert.CommonAnnotations {
+				annotations[k] = v
+			}
+			for k, v := range a.Annotations {
+				annotations[k] = v
+			}
+
 			message := struct {
-				Name     string    `json:"name"`
-				URL      string    `json:"url"`
-				Status   string    `json:"status"`
-				StartsAt time.Time `json:"startsAt"`
-				EndsAt   time.Time `json:"endsAt"`
+				Status      string            `json:"status"`
+				Labels      map[string]string `json:"labels"`
+				Annotations map[string]string `json:"annotations"`
+				StartsAt    time.Time         `json:"startsAt"`
+				EndsAt      time.Time         `json:"endsAt"`
+				GeneratorURL string           `json:"generatorURL"`
+				Fingerprint string            `json:"fingerprint"`
 			}{
-				Name:     a.Labels["alertname"],
-				URL:      a.GeneratorURL,
-				Status:   a.Status,
-				StartsAt: a.StartsAt,
-				EndsAt:   a.EndsAt,
+				Status:      a.Status,
+				Labels:      labels,
+				Annotations: annotations,
+				StartsAt:    a.StartsAt,
+				EndsAt:      a.EndsAt,
+				GeneratorURL: a.GeneratorURL,
+				Fingerprint: a.Fingerprint,
 			}
 
 			messageJSON, err := json.Marshal(message)
